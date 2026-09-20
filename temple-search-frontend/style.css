@@ -75,7 +75,7 @@ button {
   position: absolute;
   z-index: 2;
   /* 以畫面寬度定位，避免長螢幕把篩選器推得太下面。 */
-  top: clamp(36px, 11.25vw, 54px);
+  top: clamp(64px, 17vw, 82px);
   left: 3.4%;
   width: 93.2%;
 }
