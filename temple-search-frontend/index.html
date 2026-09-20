@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#8E3E32">
   <title>找找宮廟</title>
+  <!-- 首屏圖片先下載，減少手機第一次開啟時逐張出現的情況。 -->
+  <link rel="preload" as="image" href="images/temple-background.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="images/mascot-left.webp" type="image/webp">
+  <link rel="preload" as="image" href="images/mascot-right.webp" type="image/webp">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,8 +17,13 @@
       <!-- 標題與宮廟已經合併在這張圖片中，圖片會維持原始比例縮放。 -->
       <img
         class="temple-background"
-        src="./images/temple-background.png"
+        src="images/temple-background.webp"
         alt="找找宮廟"
+        width="1518"
+        height="2048"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
       >
 
       <!-- 篩選介面疊在背景圖上方。 -->
@@ -129,7 +138,7 @@
             </div>
 
             <div>
-              <dt>宮廟的摘要</dt>
+              <dt>LLM 對宮廟的摘要</dt>
               <dd id="detailSummary" class="detail-summary">—</dd>
             </div>
           </dl>
@@ -162,7 +171,14 @@
           data-speaker="left"
           aria-label="左邊吉祥物，點一下播放下一句對話"
         >
-          <img src="./images/mascot-left.png" alt="開心揮手的男筊吉祥物">
+          <img
+            src="images/mascot-left.webp"
+            alt="開心揮手的男筊吉祥物"
+            width="776"
+            height="701"
+            loading="eager"
+            decoding="async"
+          >
         </button>
 
         <button
@@ -171,7 +187,14 @@
           data-speaker="right"
           aria-label="右邊吉祥物，點一下播放下一句對話"
         >
-          <img src="./images/mascot-right.png" alt="準備出發的女筊吉祥物">
+          <img
+            src="images/mascot-right.webp"
+            alt="準備出發的女筊吉祥物"
+            width="555"
+            height="559"
+            loading="eager"
+            decoding="async"
+          >
         </button>
       </div>
     </section>
@@ -180,7 +203,7 @@
   </main>
 
   <!-- 初步篩選資料直接由 JavaScript 載入，不需要先向後端請求。 -->
-  <script src="./data/filter-options.js" defer></script>
-  <script src="./script.js" defer></script>
+  <script src="data/filter-options.js" defer></script>
+  <script src="script.js" defer></script>
 </body>
 </html>

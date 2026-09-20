@@ -19,6 +19,10 @@ body {
   min-height: 100%;
 }
 
+html {
+  background: #EEDBC7;
+}
+
 body {
   background: #EEDBC7;
   color: var(--text-brown);
@@ -37,6 +41,7 @@ button {
 
 .app {
   width: min(100%, 480px);
+  min-height: 100vh;
   min-height: 100svh;
   margin: 0 auto;
   overflow: hidden;
@@ -47,13 +52,21 @@ button {
 .temple-stage {
   position: relative;
   width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #CFAE99;
   isolation: isolate;
 }
 
 .temple-background {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -61,7 +74,8 @@ button {
 .search-panel {
   position: absolute;
   z-index: 2;
-  top: 8.35%;
+  /* 以畫面寬度定位，避免長螢幕把篩選器推得太下面。 */
+  top: clamp(36px, 11.25vw, 54px);
   left: 3.4%;
   width: 93.2%;
 }
@@ -246,9 +260,10 @@ button {
 .overlay-panel {
   position: absolute;
   z-index: 5;
-  top: 27.5%;
+  /* 上緣維持原設計位置，底部則跟著手機畫面延伸。 */
+  top: clamp(118px, 37vw, 178px);
   right: 3.5%;
-  bottom: 2.8%;
+  bottom: max(2.8%, env(safe-area-inset-bottom));
   left: 3.5%;
   overflow: hidden;
   border: 2px solid rgba(105, 70, 58, 0.32);
@@ -642,6 +657,10 @@ button {
   .app {
     min-height: 0;
     border-radius: 18px;
+  }
+
+  .temple-stage {
+    min-height: calc(100svh - 40px);
   }
 }
 
