@@ -1,0 +1,487 @@
+:root {
+  --temple-red: #8e3e32;
+  --deep-brown: #59372f;
+  --cream: #fff2d8;
+  --gold: #f3b45b;
+  --arrow-bg: rgba(89, 55, 47, 0.62);
+  --arrow-border: rgba(255, 242, 216, 0.74);
+  --shadow: rgba(53, 25, 20, 0.28);
+}
+
+* { box-sizing: border-box; }
+
+html, body { min-height: 100%; margin: 0; }
+
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  color: var(--deep-brown);
+  background: #ead2be;
+  font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+}
+
+button {
+  color: inherit;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
+[hidden] { display: none !important; }
+
+.app {
+  width: min(100%, 480px);
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #c9a598;
+  box-shadow: 0 0 28px rgba(76, 45, 35, 0.16);
+}
+
+.blessing-stage {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.stage-background {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.page-header {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  margin: 0;
+  background: var(--temple-red);
+  box-shadow: 0 4px 12px rgba(66, 30, 24, 0.16);
+}
+
+.page-header img { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+
+.blessing-content { position: absolute; z-index: 1; inset: clamp(64px, 13vw, 78px) 0 0; }
+.selector-view, .feature-view { position: absolute; inset: 0; }
+
+/* 選擇祈福方式 */
+.blessing-name, .feature-title {
+  position: absolute;
+  top: 11%;
+  left: 50%;
+  min-width: 5em;
+  margin: 0;
+  padding: 0.12em 0.48em 0.18em;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 242, 216, 0.64);
+  border-radius: 999px;
+  background: rgba(255, 242, 216, 0.46);
+  box-shadow: 0 5px 18px rgba(68, 33, 27, 0.12);
+  font-size: clamp(34px, 10vw, 50px);
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.activity-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(68vw, 326px);
+  height: min(44vh, 370px);
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.activity-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 13px 11px rgba(57, 25, 20, 0.25));
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  transition: opacity 180ms ease, transform 180ms ease;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.activity-button.mode-jiaobei .activity-image { width: 84%; height: auto; }
+.activity-button.mode-wooden-fish .activity-image { width: 96%; height: auto; }
+.activity-button.is-changing .activity-image { opacity: 0; transform: translate(-50%, -50%) scale(0.94); }
+.activity-button:active .activity-image { transform: translate(-50%, -50%) scale(0.97); }
+
+.nav-button {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: clamp(46px, 13vw, 58px);
+  height: clamp(64px, 18vw, 78px);
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid var(--arrow-border);
+  background: var(--arrow-bg);
+  box-shadow: 0 6px 16px var(--shadow);
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: background-color 140ms ease, transform 120ms ease;
+}
+
+.nav-button--previous { left: 3.5%; border-radius: 6px 18px 18px 6px; }
+.nav-button--next { right: 3.5%; border-radius: 18px 6px 6px 18px; }
+
+.nav-button__icon {
+  width: 18px;
+  height: 18px;
+  border-top: 4px solid var(--cream);
+  border-right: 4px solid var(--cream);
+}
+
+.nav-button--previous .nav-button__icon { margin-left: 7px; transform: rotate(-135deg); }
+.nav-button--next .nav-button__icon { margin-right: 7px; transform: rotate(45deg); }
+.nav-button:active { transform: translateY(-50%) scale(0.94); background: rgba(142, 62, 50, 0.76); }
+
+.interaction-hint {
+  position: absolute;
+  right: 0;
+  bottom: 13%;
+  left: 0;
+  margin: 0;
+  font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  font-size: clamp(14px, 4vw, 18px);
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 1px rgba(255, 244, 224, 0.9);
+}
+
+.mode-indicators {
+  position: absolute;
+  bottom: 8.5%;
+  left: 50%;
+  display: flex;
+  gap: 9px;
+  transform: translateX(-50%);
+}
+
+.mode-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 242, 216, 0.72);
+  box-shadow: 0 1px 4px rgba(57, 25, 20, 0.22);
+  transition: width 160ms ease, border-radius 160ms ease, background-color 160ms ease;
+}
+
+.mode-indicator.is-active { width: 25px; border-radius: 999px; background: var(--temple-red); }
+
+/* 互動畫面共用元件 */
+.back-button {
+  position: absolute;
+  z-index: 30;
+  top: 2.5%;
+  left: 4%;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-height: 42px;
+  padding: 5px 12px 6px 8px;
+  border: 1px solid rgba(255, 242, 216, 0.72);
+  border-radius: 999px;
+  background: rgba(89, 55, 47, 0.68);
+  color: var(--cream);
+  box-shadow: 0 5px 14px rgba(53, 25, 20, 0.2);
+  font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.back-button span { font-size: 30px; line-height: 0.7; }
+
+.action-button {
+  min-width: min(58vw, 260px);
+  min-height: 54px;
+  padding: 10px 24px;
+  border: 2px solid rgba(255, 249, 233, 0.9);
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--deep-brown);
+  box-shadow: 0 7px 0 rgba(105, 70, 58, 0.28), 0 12px 22px rgba(53, 25, 20, 0.22);
+  font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  font-size: clamp(22px, 6vw, 28px);
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 100ms ease, box-shadow 100ms ease, filter 150ms ease;
+}
+
+.action-button:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 3px 0 rgba(105, 70, 58, 0.28), 0 7px 15px rgba(53, 25, 20, 0.18); }
+.action-button:disabled { cursor: not-allowed; filter: saturate(0.62); }
+
+/* 擲筊 */
+.jiaobei-view .feature-title { top: 5%; font-size: clamp(30px, 8.5vw, 42px); }
+
+.jiaobei-pair {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: min(82%, 390px);
+  height: min(25vh, 215px);
+  transform: translateX(-50%);
+}
+
+.jiaobei-piece { position: absolute; bottom: 0; width: 49%; will-change: transform; }
+.jiaobei-piece--left { left: 0; transform: rotate(-8deg); }
+.jiaobei-piece--right { right: 0; transform: rotate(8deg); }
+
+.jiaobei-piece img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 7px rgba(55, 24, 20, 0.25));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.jiaobei-piece--left.is-tossing { animation: toss-left 950ms cubic-bezier(0.2, 0.74, 0.28, 1) both; }
+.jiaobei-piece--right.is-tossing { animation: toss-right 950ms cubic-bezier(0.2, 0.74, 0.28, 1) both; }
+
+@keyframes toss-left {
+  0% { transform: translate(0, 0) rotate(-8deg); }
+  28% { transform: translate(-22px, -145px) rotate(-250deg); }
+  63% { transform: translate(-30px, -58px) rotate(-540deg); }
+  78% { transform: translate(-7px, 0) rotate(-675deg); }
+  87% { transform: translate(-4px, -11px) rotate(-704deg); }
+  94% { transform: translate(-2px, 0) rotate(-720deg); }
+  97% { transform: translate(-1px, -3px) rotate(-726deg); }
+  100% { transform: translate(0, 0) rotate(-728deg); }
+}
+
+@keyframes toss-right {
+  0% { transform: translate(0, 0) rotate(8deg); }
+  28% { transform: translate(22px, -145px) rotate(250deg); }
+  63% { transform: translate(30px, -58px) rotate(540deg); }
+  78% { transform: translate(7px, 0) rotate(675deg); }
+  87% { transform: translate(4px, -11px) rotate(704deg); }
+  94% { transform: translate(2px, 0) rotate(720deg); }
+  97% { transform: translate(1px, -3px) rotate(726deg); }
+  100% { transform: translate(0, 0) rotate(728deg); }
+}
+
+.jiaobei-result {
+  position: absolute;
+  top: 63%;
+  right: 0;
+  left: 0;
+  min-height: 1.5em;
+  margin: 0;
+  color: var(--temple-red);
+  font-size: clamp(30px, 8vw, 40px);
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.15em;
+  opacity: 0;
+  text-shadow: 0 2px 0 rgba(255, 242, 216, 0.9), 0 6px 14px rgba(53, 25, 20, 0.16);
+}
+
+.jiaobei-result.is-visible { animation: result-reveal 480ms ease-out both; }
+
+@keyframes result-reveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.toss-button { position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); }
+.toss-button:active:not(:disabled) { transform: translate(-50%, 4px); }
+
+/* 敲木魚 */
+.merit-panel {
+  position: absolute;
+  z-index: 6;
+  top: 4%;
+  left: 50%;
+  min-width: 135px;
+  padding: 8px 22px 10px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 242, 216, 0.68);
+  border-radius: 24px;
+  background: rgba(255, 242, 216, 0.5);
+  box-shadow: 0 5px 18px rgba(68, 33, 27, 0.12);
+  text-align: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.merit-panel h1 { margin: 0; font-size: clamp(23px, 6vw, 30px); line-height: 1.15; letter-spacing: 0.16em; }
+.merit-panel strong { display: block; margin-top: 2px; color: var(--temple-red); font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif; font-size: clamp(40px, 11vw, 54px); line-height: 1; }
+
+.muyu-scene {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  width: min(92%, 440px);
+  height: min(50vh, 410px);
+  transform: translateX(-50%);
+}
+
+.muyu-button {
+  position: absolute;
+  z-index: 2;
+  right: 2%;
+  bottom: 0;
+  left: 2%;
+  width: 96%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.muyu-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 14px 10px rgba(55, 24, 20, 0.25));
+  transform-origin: 52% 67%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.muyu-image.is-hit { animation: muyu-hit 250ms ease-out both; }
+
+@keyframes muyu-hit {
+  0% { transform: scale(1) rotate(0); }
+  35% { transform: scale(0.95) rotate(-1.2deg); }
+  65% { transform: scale(1.015) rotate(0.8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.muyu-stick {
+  position: absolute;
+  z-index: 4;
+  top: 1%;
+  right: -2%;
+  width: 70%;
+  height: auto;
+  filter: drop-shadow(0 8px 7px rgba(55, 24, 20, 0.2));
+  transform: rotate(0deg);
+  transform-origin: 91% 86%;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform;
+}
+
+.muyu-stick.is-striking { animation: stick-strike 250ms cubic-bezier(0.25, 0.82, 0.3, 1) both; }
+
+@keyframes stick-strike {
+  0% { transform: rotate(0deg); }
+  44% { transform: rotate(-24deg); }
+  62% { transform: rotate(-21deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.muyu-effects { position: absolute; z-index: 7; inset: 0; overflow: visible; pointer-events: none; }
+
+.impact-spark {
+  position: absolute;
+  top: 43%;
+  left: 42%;
+  color: #ffd267;
+  font-family: system-ui, sans-serif;
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 185, 69, 0.9);
+  animation: spark-burst 420ms ease-out both;
+}
+
+@keyframes spark-burst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.25) rotate(0); }
+  35% { opacity: 1; transform: translate(-50%, -50%) scale(1.25) rotate(22deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.7) rotate(45deg); }
+}
+
+.merit-float {
+  position: absolute;
+  z-index: 8;
+  top: 52%;
+  left: 50%;
+  color: var(--temple-red);
+  font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  font-size: clamp(19px, 5vw, 25px);
+  font-weight: 900;
+  white-space: nowrap;
+  text-shadow: 0 2px 0 var(--cream), 0 4px 10px rgba(55, 24, 20, 0.2);
+  animation: merit-float 760ms ease-out both;
+}
+
+@keyframes merit-float {
+  0% { opacity: 0; transform: translate(calc(-50% + var(--float-x)), 8px) scale(0.82); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--float-x)), -72px) scale(1.04); }
+}
+
+.muyu-hint {
+  position: absolute;
+  right: 0;
+  bottom: 7%;
+  left: 0;
+  margin: 0;
+  font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  font-size: clamp(16px, 4.4vw, 20px);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 1px rgba(255, 244, 224, 0.95);
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+@media (max-height: 640px) {
+  .blessing-name { top: 7%; }
+  .activity-button { top: 49%; height: 43vh; }
+  .interaction-hint { bottom: 9.5%; }
+  .mode-indicators { bottom: 5.5%; }
+  .jiaobei-pair { top: 26%; height: 24vh; }
+  .jiaobei-result { top: 60%; }
+  .toss-button { bottom: 6%; }
+  .muyu-scene { top: 22%; height: 50vh; }
+  .muyu-hint { bottom: 3.5%; }
+}
+
+@media (min-width: 481px) {
+  body { padding-block: 20px; }
+  .app, .blessing-stage { min-height: calc(100vh - 40px); min-height: calc(100svh - 40px); border-radius: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activity-image, .nav-button, .mode-indicator { transition: none; }
+}
