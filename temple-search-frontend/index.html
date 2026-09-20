@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#8E3E32">
+  <title>找找宮廟</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app" aria-label="宮廟查詢系統">
+    <section class="temple-stage">
+      <!-- 標題與宮廟已經合併在這張圖片中，圖片會維持原始比例縮放。 -->
+      <img
+        class="temple-background"
+        src="./images/temple-background.png"
+        alt="找找宮廟"
+      >
+
+      <!-- 篩選介面疊在背景圖上方。 -->
+      <form id="searchForm" class="search-panel" novalidate>
+        <fieldset class="region-filter">
+          <legend class="sr-only">選擇地區</legend>
+
+          <button class="region-button is-selected" type="button" data-region="北部" aria-pressed="true" disabled>北部</button>
+          <button class="region-button" type="button" data-region="中部" aria-pressed="false" disabled>中部</button>
+          <button class="region-button" type="button" data-region="南部" aria-pressed="false" disabled>南部</button>
+          <button class="region-button" type="button" data-region="東部" aria-pressed="false" disabled>東部</button>
+          <button class="region-button" type="button" data-region="離島" aria-pressed="false" disabled>離島</button>
+        </fieldset>
+
+        <div class="select-filter">
+          <label class="select-wrap">
+            <span class="sr-only">縣市</span>
+            <select id="citySelect" name="city" disabled>
+              <option value="">載入中…</option>
+            </select>
+          </label>
+
+          <label class="select-wrap">
+            <span class="sr-only">行政區</span>
+            <select id="districtSelect" name="district" disabled>
+              <option value="">行政區</option>
+            </select>
+          </label>
+
+          <label class="select-wrap">
+            <span class="sr-only">教別</span>
+            <select id="religionSelect" name="religion" disabled>
+              <option value="">載入中…</option>
+            </select>
+          </label>
+
+          <label class="select-wrap">
+            <span class="sr-only">主祀神祇</span>
+            <select id="deitySelect" name="deity" disabled>
+              <option value="">載入中…</option>
+            </select>
+          </label>
+        </div>
+
+        <button id="searchButton" class="search-button" type="submit" disabled>
+          <span class="search-button__label">開始查詢！</span>
+          <span class="search-button__loading" aria-hidden="true">查詢中…</span>
+        </button>
+      </form>
+
+      <!-- 第一次後端回傳：符合條件的宮廟清單。 -->
+      <section
+        id="resultsPanel"
+        class="overlay-panel"
+        aria-labelledby="resultsTitle"
+        hidden
+      >
+        <button
+          id="closeResultsButton"
+          class="overlay-close"
+          type="button"
+          aria-label="關閉查詢結果"
+        >
+          ×
+        </button>
+
+        <div class="overlay-scroll">
+          <header class="overlay-heading">
+            <h2 id="resultsTitle">查詢結果</h2>
+            <p id="resultCount">正在取得符合條件的宮廟…</p>
+          </header>
+
+          <div id="resultList" class="result-list"></div>
+        </div>
+      </section>
+
+      <!-- 第二次後端回傳：使用者選定宮廟的詳細資料。 -->
+      <section
+        id="detailPanel"
+        class="overlay-panel"
+        aria-labelledby="detailName"
+        hidden
+      >
+        <button
+          id="closeDetailButton"
+          class="overlay-close"
+          type="button"
+          aria-label="返回查詢結果"
+        >
+          ×
+        </button>
+
+        <div class="overlay-scroll">
+          <header class="overlay-heading detail-heading">
+            <h2 id="detailName">宮廟名稱</h2>
+          </header>
+
+          <dl class="detail-list">
+            <div>
+              <dt>教別／神祇</dt>
+              <dd id="detailReligionDeity">—</dd>
+            </div>
+
+            <div>
+              <dt>位置</dt>
+              <dd id="detailAddress">—</dd>
+            </div>
+
+            <div>
+              <dt>電話</dt>
+              <dd id="detailPhone">—</dd>
+            </div>
+
+            <div>
+              <dt>宮廟的摘要</dt>
+              <dd id="detailSummary" class="detail-summary">—</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- 對話框會依照 script.js 的 MASCOT_DIALOGUES 輪流出現。 -->
+      <div id="mascotLayer" class="mascot-layer">
+        <div
+          id="leftSpeechBubble"
+          class="speech-bubble speech-bubble--left is-speaking"
+          role="status"
+          aria-live="polite"
+        >
+          一起去宮廟啊！
+        </div>
+
+        <div
+          id="rightSpeechBubble"
+          class="speech-bubble speech-bubble--right"
+          role="status"
+          aria-live="polite"
+        >
+          好啊，走起！
+        </div>
+
+        <button
+          class="mascot mascot--left"
+          type="button"
+          data-speaker="left"
+          aria-label="左邊吉祥物，點一下播放下一句對話"
+        >
+          <img src="./images/mascot-left.png" alt="開心揮手的男筊吉祥物">
+        </button>
+
+        <button
+          class="mascot mascot--right"
+          type="button"
+          data-speaker="right"
+          aria-label="右邊吉祥物，點一下播放下一句對話"
+        >
+          <img src="./images/mascot-right.png" alt="準備出發的女筊吉祥物">
+        </button>
+      </div>
+    </section>
+
+    <p id="statusMessage" class="status-message" role="status" aria-live="polite"></p>
+  </main>
+
+  <!-- 初步篩選資料直接由 JavaScript 載入，不需要先向後端請求。 -->
+  <script src="./data/filter-options.js" defer></script>
+  <script src="./script.js" defer></script>
+</body>
+</html>
