@@ -8,9 +8,9 @@
  * 3. USE_MOCK_API：確認後端完成後改成 false。
  */
 window.TEMPLE_CHECKIN_CONFIG = Object.freeze({
-  LIFF_ID: "YOUR_LIFF_ID",
+  LIFF_ID: "2011686008-3xsSgmY6",
   API_BASE_URL: "https://two026-line-temple.onrender.com",
-  USE_MOCK_API: true,
+  USE_MOCK_API: false,
   API_ENDPOINTS: Object.freeze({
     login: "/records/login",
     search: "/temples/search",
