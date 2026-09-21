@@ -459,7 +459,11 @@ async function apiFetch(url, options = {}) {
   if (options.body) {
     headers.set("Content-Type", "application/json");
   }
-  const response = await fetch(url, { ...options, headers });
+  const response = await fetch(url, {
+  ...options,
+  headers,
+  credentials: "include"
+  });
   const isJson = response.headers.get("content-type")?.includes("application/json");
   const payload = isJson ? await response.json() : null;
 
