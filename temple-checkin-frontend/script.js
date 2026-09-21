@@ -383,13 +383,75 @@ function setSelectedRegion(region) {
   updateCityOptions(region);
 }
 
+function firstNonEmptyText(...values) {
+  for (const value of values) {
+    if (value === null || value === undefined) {
+      continue;
+    }
+    const text = String(value).trim();
+    if (text) {
+      return text;
+    }
+  }
+  return "";
+}
+
+function normalizeTaiwanText(value = "") {
+  return String(value).trim().replaceAll("台", "臺");
+}
+
 function findCityFromAddress(address = "") {
+  const normalizedAddress = normalizeTaiwanText(address);
   const cities = Object.values(FILTER_DATA.regions ?? {}).flat();
-  return cities.find((city) => address.includes(city)) ?? "";
+  return cities.find((city) => normalizedAddress.includes(normalizeTaiwanText(city))) ?? "";
+}
+
+function canonicalCity(city = "", address = "") {
+  const normalizedCity = normalizeTaiwanText(city);
+  const cities = Object.values(FILTER_DATA.regions ?? {}).flat();
+  return (
+    cities.find((candidate) => normalizeTaiwanText(candidate) === normalizedCity) ??
+    (findCityFromAddress(address) || firstNonEmptyText(city))
+  );
 }
 
 function regionFromCity(city = "") {
-  return REGIONS.find((region) => FILTER_DATA.regions?.[region]?.includes(city)) ?? "";
+  const normalizedCity = normalizeTaiwanText(city);
+  return (
+    REGIONS.find((region) =>
+      FILTER_DATA.regions?.[region]?.some(
+        (candidate) => normalizeTaiwanText(candidate) === normalizedCity
+      )
+    ) ?? ""
+  );
+}
+
+function normalizeRegion(value = "") {
+  const region = firstNonEmptyText(value);
+  if (!region) {
+    return "";
+  }
+  if (REGIONS.includes(region)) {
+    return region;
+  }
+
+  const normalized = normalizeTaiwanText(region).toLowerCase();
+  if (normalized.includes("離島") || normalized.includes("外島") || normalized.includes("island")) {
+    return "離島";
+  }
+  if (normalized.includes("北") || normalized.includes("north")) {
+    return "北部";
+  }
+  if (normalized.includes("中") || normalized.includes("central")) {
+    return "中部";
+  }
+  if (normalized.includes("南") || normalized.includes("south")) {
+    return "南部";
+  }
+  if (normalized.includes("東") || normalized.includes("east")) {
+    return "東部";
+  }
+  return "";
 }
 
 function unwrapTemple(payload) {
@@ -397,13 +459,20 @@ function unwrapTemple(payload) {
     return {};
   }
   if (payload.temple && typeof payload.temple === "object") {
-    return { ...payload.temple, checkedInAt: payload.checkedInAt ?? payload.temple.checkedInAt };
+    return {
+      ...payload.temple,
+      checkInAt: payload.checkInAt ?? payload.temple.checkInAt,
+      checkedInAt: payload.checkedInAt ?? payload.temple.checkedInAt
+    };
   }
   if (payload.data && !Array.isArray(payload.data) && typeof payload.data === "object") {
     if (payload.data.temple) {
       return {
         ...payload.data.temple,
-        checkedInAt: payload.data.checkedInAt ?? payload.checkedInAt
+        checkInAt:
+          payload.data.checkInAt ?? payload.checkInAt ?? payload.data.temple.checkInAt,
+        checkedInAt:
+          payload.data.checkedInAt ?? payload.checkedInAt ?? payload.data.temple.checkedInAt
       };
     }
     return payload.data;
@@ -413,9 +482,15 @@ function unwrapTemple(payload) {
 
 function normalizeTemple(payload) {
   const temple = unwrapTemple(payload);
-  const address = temple.address ?? temple.location ?? temple["地址"] ?? "";
-  const city = temple.city ?? temple.county ?? temple["縣市"] ?? findCityFromAddress(address);
-  const region = temple.region ?? temple.area ?? temple["地區"] ?? regionFromCity(city);
+  const address = firstNonEmptyText(temple.address, temple.location, temple["地址"]);
+  const city = canonicalCity(
+    firstNonEmptyText(temple.city, temple.county, temple["縣市"]),
+    address
+  );
+  const region =
+    normalizeRegion(firstNonEmptyText(temple.region, temple.area, temple["地區"])) ||
+    regionFromCity(city) ||
+    regionFromCity(findCityFromAddress(address));
 
   return {
     id: String(temple.id ?? temple.templeId ?? temple.temple_id ?? temple["編號"] ?? ""),
@@ -438,17 +513,59 @@ function normalizeTemple(payload) {
   };
 }
 
-function extractList(payload, keys) {
+function looksLikeTemple(payload) {
+  if (!payload || Array.isArray(payload) || typeof payload !== "object") {
+    return false;
+  }
+  const temple = unwrapTemple(payload);
+  return Boolean(
+    temple.id ??
+      temple.templeId ??
+      temple.temple_id ??
+      temple.name ??
+      temple.templeName ??
+      temple.temple_name ??
+      temple.address
+  );
+}
+
+function extractList(payload, keys, visited = new Set()) {
   if (Array.isArray(payload)) {
     return payload;
   }
+  if (!payload || typeof payload !== "object" || visited.has(payload)) {
+    return [];
+  }
+  visited.add(payload);
+
   for (const key of keys) {
     if (Array.isArray(payload?.[key])) {
       return payload[key];
     }
   }
-  if (payload?.data) {
-    return extractList(payload.data, keys);
+
+  // 後端只有一筆紀錄時，即使回傳單一物件也能正常顯示。
+  if (looksLikeTemple(payload)) {
+    return [payload];
+  }
+
+  // 相容 data、result 等不同包裝層，以及更深層的 records 陣列。
+  const preferredWrappers = ["data", "result", "payload", "response"];
+  for (const key of preferredWrappers) {
+    if (payload[key] && typeof payload[key] === "object") {
+      const nested = extractList(payload[key], keys, visited);
+      if (nested.length) {
+        return nested;
+      }
+    }
+  }
+  for (const value of Object.values(payload)) {
+    if (value && typeof value === "object") {
+      const nested = extractList(value, keys, visited);
+      if (nested.length) {
+        return nested;
+      }
+    }
   }
   return [];
 }
@@ -460,9 +577,9 @@ async function apiFetch(url, options = {}) {
     headers.set("Content-Type", "application/json");
   }
   const response = await fetch(url, {
-  ...options,
-  headers,
-  credentials: "include"
+    ...options,
+    headers,
+    credentials: "include"
   });
   const isJson = response.headers.get("content-type")?.includes("application/json");
   const payload = isJson ? await response.json() : null;
