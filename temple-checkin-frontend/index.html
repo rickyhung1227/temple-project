@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#8f3d30" />
+    <meta name="description" content="登入 LINE 後收藏並查看自己的宮廟打卡紀錄。" />
+    <title>我的宮廟足跡</title>
+    <link rel="preload" href="images/temple-shelf.webp" as="image" type="image/webp" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app-shell" id="appShell" aria-busy="true">
+      <img
+        class="scene-background"
+        src="images/temple-shelf.webp"
+        alt="宮廟木製收藏架背景"
+        width="1080"
+        height="1456"
+        decoding="async"
+        fetchpriority="high"
+      />
+
+      <header class="top-actions">
+        <button class="add-temple-button" id="openAddButton" type="button">
+          <span class="add-icon" aria-hidden="true">＋</span>
+          <span>新增宮廟</span>
+        </button>
+        <p class="user-greeting" id="userGreeting" aria-live="polite">正在準備你的收藏架…</p>
+      </header>
+
+      <section class="shelf-row shelf-north" data-region="北部" aria-label="北部宮廟">
+        <div class="orb-grid" data-orb-grid></div>
+        <span class="page-indicator" data-page-indicator hidden></span>
+        <button class="shelf-next" data-next-page type="button" aria-label="查看北部下一頁" hidden>
+          <span aria-hidden="true">›</span>
+        </button>
+      </section>
+
+      <section class="shelf-row shelf-central" data-region="中部" aria-label="中部宮廟">
+        <div class="orb-grid" data-orb-grid></div>
+        <span class="page-indicator" data-page-indicator hidden></span>
+        <button class="shelf-next" data-next-page type="button" aria-label="查看中部下一頁" hidden>
+          <span aria-hidden="true">›</span>
+        </button>
+      </section>
+
+      <section class="shelf-row shelf-south" data-region="南部" aria-label="南部宮廟">
+        <div class="orb-grid" data-orb-grid></div>
+        <span class="page-indicator" data-page-indicator hidden></span>
+        <button class="shelf-next" data-next-page type="button" aria-label="查看南部下一頁" hidden>
+          <span aria-hidden="true">›</span>
+        </button>
+      </section>
+
+      <section class="shelf-row shelf-east" data-region="東部" aria-label="東部宮廟">
+        <div class="orb-grid" data-orb-grid></div>
+        <span class="page-indicator" data-page-indicator hidden></span>
+        <button class="shelf-next" data-next-page type="button" aria-label="查看東部下一頁" hidden>
+          <span aria-hidden="true">›</span>
+        </button>
+      </section>
+
+      <section class="shelf-row shelf-islands" data-region="離島" aria-label="離島宮廟">
+        <div class="orb-grid" data-orb-grid></div>
+        <span class="page-indicator" data-page-indicator hidden></span>
+        <button class="shelf-next" data-next-page type="button" aria-label="查看離島下一頁" hidden>
+          <span aria-hidden="true">›</span>
+        </button>
+      </section>
+
+      <div class="modal-layer" id="addModal" hidden>
+        <section class="modal-card search-card" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+          <button class="close-button" id="closeAddButton" type="button" aria-label="關閉新增宮廟視窗">×</button>
+
+          <div id="filterView">
+            <p class="eyebrow">新增打卡</p>
+            <h1 id="addModalTitle">尋找宮廟</h1>
+            <p class="modal-intro">先選條件，再從後端找到的宮廟中挑選一間。</p>
+
+            <form id="searchForm">
+              <div class="region-buttons" role="group" aria-label="選擇地區">
+                <button class="region-button is-selected" type="button" data-region="北部">北部</button>
+                <button class="region-button" type="button" data-region="中部">中部</button>
+                <button class="region-button" type="button" data-region="南部">南部</button>
+                <button class="region-button" type="button" data-region="東部">東部</button>
+                <button class="region-button" type="button" data-region="離島">離島</button>
+              </div>
+
+              <div class="select-grid">
+                <label>
+                  <span>縣市</span>
+                  <select id="citySelect" name="city"><option value="">縣市</option></select>
+                </label>
+                <label>
+                  <span>行政區</span>
+                  <select id="districtSelect" name="district" disabled><option value="">行政區</option></select>
+                </label>
+                <label>
+                  <span>教別</span>
+                  <select id="religionSelect" name="religion"><option value="">教別</option></select>
+                </label>
+                <label>
+                  <span>主祀神祇</span>
+                  <select id="deitySelect" name="deity"><option value="">主祀神祇</option></select>
+                </label>
+              </div>
+
+              <p class="form-status" id="formStatus" aria-live="polite"></p>
+              <button class="primary-button" id="searchButton" type="submit">開始查詢</button>
+            </form>
+          </div>
+
+          <div id="resultsView" hidden>
+            <button class="back-button" id="backToFiltersButton" type="button">‹ 修改篩選</button>
+            <p class="eyebrow">選擇打卡地點</p>
+            <h2>查詢結果</h2>
+            <p class="result-summary" id="resultSummary"></p>
+            <div class="result-list" id="resultList"></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="modal-layer" id="detailModal" hidden>
+        <section class="modal-card detail-card" role="dialog" aria-modal="true" aria-labelledby="detailName">
+          <button class="close-button" id="closeDetailButton" type="button" aria-label="關閉宮廟資料">×</button>
+          <span class="detail-region" id="detailRegion"></span>
+          <h2 id="detailName"></h2>
+          <dl class="detail-list">
+            <div><dt>教別／神祇</dt><dd id="detailReligionDeity"></dd></div>
+            <div><dt>位置</dt><dd id="detailAddress"></dd></div>
+            <div><dt>電話</dt><dd id="detailPhone"></dd></div>
+            <div><dt>打卡時間</dt><dd id="detailCheckedAt"></dd></div>
+          </dl>
+          <div class="summary-box">
+            <h3>宮廟摘要</h3>
+            <p id="detailSummary"></p>
+          </div>
+          <button class="delete-checkin-button" id="deleteCheckinButton" type="button">
+            從收藏架移除
+          </button>
+        </section>
+      </div>
+
+      <div class="loading-cover" id="loadingCover" hidden>
+        <span class="spinner" aria-hidden="true"></span>
+        <p id="loadingText">載入中…</p>
+      </div>
+
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    </main>
+
+    <script src="config.js" defer></script>
+    <script src="data/filter-options.js" defer></script>
+    <script src="script.js" defer></script>
+  </body>
+</html>

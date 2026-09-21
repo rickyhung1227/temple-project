@@ -1,0 +1,684 @@
+:root {
+  color-scheme: light;
+  --coffee: #57352e;
+  --deep-coffee: #3e241f;
+  --vermilion: #d95b45;
+  --cream: #fff3d8;
+  --apricot: #f3d6a4;
+  --pale-yellow: #f8e8c9;
+  --incense-gold: #f3b45b;
+  --glass: rgba(255, 241, 207, 0.82);
+  --glass-border: rgba(255, 249, 230, 0.88);
+  font-family: "Noto Serif TC", "PingFang TC", "Microsoft JhengHei", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  min-height: 100svh;
+  place-items: start center;
+  overflow: hidden;
+  background: #36201d;
+  color: var(--deep-coffee);
+}
+
+button,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(255, 232, 166, 0.95);
+  outline-offset: 2px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.app-shell {
+  position: relative;
+  width: 100vw;
+  height: 100svh;
+  min-height: 600px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #7f4b3e;
+}
+
+.scene-background {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
+}
+
+.app-shell::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(69, 27, 24, 0.06), transparent 24%),
+    radial-gradient(circle at 50% 18%, rgba(255, 224, 170, 0.08), transparent 32%);
+}
+
+.top-actions {
+  position: absolute;
+  top: max(5.8%, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 3;
+  display: grid;
+  width: min(52%, 350px);
+  justify-items: center;
+  transform: translateX(-50%);
+}
+
+.add-temple-button {
+  display: inline-flex;
+  min-height: 54px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.38em;
+  border: 1px solid rgba(255, 242, 211, 0.9);
+  border-radius: 999px;
+  box-shadow:
+    0 8px 18px rgba(57, 24, 20, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  color: #fff5df;
+  background:
+    linear-gradient(135deg, rgba(174, 67, 48, 0.9), rgba(110, 45, 38, 0.92));
+  font-size: clamp(1rem, 4.3vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: transform 160ms ease, filter 160ms ease;
+}
+
+.add-temple-button:active {
+  transform: translateY(2px) scale(0.98);
+}
+
+.add-icon {
+  font-family: system-ui, sans-serif;
+  font-size: 1.45em;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.user-greeting {
+  max-width: 100%;
+  margin: 0.48rem 0 0;
+  overflow: hidden;
+  color: rgba(255, 241, 212, 0.94);
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: clamp(0.72rem, 2.8vw, 0.92rem);
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 4px #4b221e;
+  white-space: nowrap;
+}
+
+.shelf-row {
+  --row-top: 26%;
+  position: absolute;
+  top: var(--row-top);
+  right: 1.5%;
+  left: 19.3%;
+  height: 8.8%;
+}
+
+.shelf-north { --row-top: 25.2%; }
+.shelf-central { --row-top: 36%; }
+.shelf-south { --row-top: 46.7%; }
+.shelf-east { --row-top: 57.4%; }
+.shelf-islands { --row-top: 68.2%; }
+
+.orb-grid {
+  display: grid;
+  width: calc(100% - 9%);
+  height: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: clamp(3px, 1.2vw, 10px);
+}
+
+.temple-orb {
+  position: relative;
+  display: grid;
+  width: min(13.5vw, 82px);
+  max-width: 94%;
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 237, 198, 0.88);
+  border-radius: 50%;
+  box-shadow:
+    0 5px 8px rgba(49, 20, 18, 0.42),
+    inset 5px 7px 12px rgba(255, 255, 255, 0.34),
+    inset -7px -9px 13px rgba(105, 33, 30, 0.3);
+  color: #4d2923;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.75) 0 7%, transparent 8%),
+    radial-gradient(circle at 36% 30%, rgba(255, 230, 177, 0.8), rgba(221, 98, 71, 0.72) 58%, rgba(121, 47, 39, 0.82) 100%);
+  cursor: pointer;
+  animation: orb-arrive 420ms both cubic-bezier(0.2, 0.75, 0.3, 1.2);
+  transition: transform 150ms ease, filter 150ms ease;
+  backdrop-filter: blur(3px);
+}
+
+.temple-orb::after {
+  position: absolute;
+  inset: 11%;
+  border: 1px solid rgba(255, 242, 213, 0.38);
+  border-radius: 50%;
+  content: "";
+}
+
+.temple-orb:active {
+  transform: translateY(2px) scale(0.94);
+}
+
+.temple-orb span {
+  z-index: 1;
+  display: -webkit-box;
+  max-width: 82%;
+  overflow: hidden;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: clamp(0.56rem, 2.25vw, 0.86rem);
+  font-weight: 800;
+  line-height: 1.12;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 247, 226, 0.72);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.shelf-next {
+  position: absolute;
+  top: 50%;
+  right: -0.4%;
+  display: grid;
+  width: clamp(27px, 7vw, 44px);
+  aspect-ratio: 0.82;
+  place-items: center;
+  border: 1px solid rgba(255, 236, 194, 0.68);
+  border-radius: 50% 12px 12px 50%;
+  box-shadow: 0 4px 8px rgba(48, 19, 17, 0.35);
+  color: #fff2cf;
+  background: linear-gradient(135deg, rgba(172, 78, 55, 0.9), rgba(91, 45, 38, 0.9));
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.shelf-next span {
+  margin-top: -0.08em;
+  font-family: system-ui, sans-serif;
+  font-size: clamp(1.45rem, 6vw, 2.3rem);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.page-indicator {
+  position: absolute;
+  top: -8%;
+  right: 1.4%;
+  padding: 0.12em 0.42em;
+  border-radius: 999px;
+  color: #fff2d2;
+  background: rgba(70, 33, 28, 0.74);
+  font-family: system-ui, sans-serif;
+  font-size: clamp(0.55rem, 1.8vw, 0.72rem);
+}
+
+.modal-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+  place-items: center;
+  background: rgba(49, 25, 22, 0.56);
+  backdrop-filter: blur(5px);
+}
+
+.modal-card {
+  position: relative;
+  width: min(100%, 590px);
+  max-height: min(84svh, 780px);
+  overflow: auto;
+  border: 1.5px solid var(--glass-border);
+  border-radius: 28px;
+  box-shadow:
+    0 18px 48px rgba(40, 17, 15, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  padding: clamp(1.3rem, 5vw, 2.2rem);
+  color: var(--deep-coffee);
+  background:
+    linear-gradient(150deg, rgba(255, 242, 211, 0.95), rgba(243, 208, 157, 0.91));
+  scrollbar-color: rgba(105, 70, 58, 0.55) transparent;
+  backdrop-filter: blur(16px);
+  animation: modal-enter 220ms both ease-out;
+}
+
+.modal-card h1,
+.modal-card h2 {
+  margin: 0;
+  padding-right: 2.5rem;
+  font-size: clamp(1.65rem, 7vw, 2.45rem);
+  line-height: 1.2;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  color: #a84939;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.modal-intro,
+.result-summary {
+  margin: 0.5rem 0 1rem;
+  color: #765046;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
+.close-button {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(105, 70, 58, 0.48);
+  border-radius: 14px;
+  color: var(--deep-coffee);
+  background: rgba(243, 180, 91, 0.88);
+  font-family: system-ui, sans-serif;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.region-buttons {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(5px, 1.8vw, 10px);
+  padding: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 18px;
+  background: rgba(255, 246, 220, 0.45);
+}
+
+.region-button {
+  min-height: 46px;
+  border: 1px solid rgba(171, 115, 71, 0.32);
+  border-radius: 13px;
+  box-shadow: 0 3px 6px rgba(100, 60, 42, 0.16);
+  color: #69463a;
+  background: #f3d6a4;
+  font-size: clamp(0.78rem, 3.5vw, 1rem);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.region-button.is-selected {
+  border-color: rgba(141, 49, 38, 0.36);
+  color: #fff9e9;
+  background: #d95b45;
+}
+
+.select-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.8rem;
+}
+
+.select-grid label span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+.select-grid select {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid rgba(170, 111, 69, 0.32);
+  border-radius: 14px;
+  padding: 0 2.2rem 0 0.85rem;
+  color: #69463a;
+  background: #f8e8c9;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.form-status {
+  min-height: 1.45em;
+  margin: 0.65rem 0 0.25rem;
+  color: #a33f32;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 0.84rem;
+}
+
+.primary-button {
+  display: block;
+  width: min(100%, 310px);
+  min-height: 54px;
+  margin: 0.3rem auto 0;
+  border: 2px solid rgba(255, 250, 229, 0.92);
+  border-radius: 17px;
+  box-shadow: 0 6px 10px rgba(93, 52, 38, 0.24);
+  color: #69463a;
+  background: #f3b45b;
+  font-size: 1.12rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+}
+
+.primary-button:disabled,
+.result-item:disabled {
+  opacity: 0.58;
+  cursor: wait;
+}
+
+.back-button {
+  margin: 0 0 0.7rem;
+  border: 0;
+  padding: 0;
+  color: #954335;
+  background: transparent;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.result-list {
+  display: grid;
+  max-height: 52svh;
+  gap: 0.72rem;
+  overflow: auto;
+  padding: 0.15rem 0.2rem 0.2rem 0;
+}
+
+.result-item {
+  width: 100%;
+  border: 1px solid rgba(144, 88, 61, 0.25);
+  border-radius: 17px;
+  box-shadow: 0 4px 10px rgba(91, 48, 37, 0.11);
+  padding: 0.9rem 2.7rem 0.9rem 1rem;
+  color: var(--deep-coffee);
+  background: rgba(255, 250, 232, 0.8);
+  text-align: left;
+  cursor: pointer;
+}
+
+.result-item::after {
+  float: right;
+  margin-right: -1.8rem;
+  color: #b35240;
+  content: "＋";
+  font-family: system-ui, sans-serif;
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+
+.result-item strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 1.08rem;
+}
+
+.result-item span {
+  display: block;
+  color: #775349;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.detail-region {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  border-radius: 999px;
+  padding: 0.26rem 0.72rem;
+  color: #fff8e5;
+  background: #b34d3c;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.detail-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1.1rem 0;
+}
+
+.detail-list div {
+  display: grid;
+  grid-template-columns: 6.2em 1fr;
+  gap: 0.5rem;
+}
+
+.detail-list dt {
+  font-weight: 900;
+}
+
+.detail-list dd {
+  margin: 0;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.5;
+}
+
+.summary-box {
+  border: 1px solid rgba(148, 89, 58, 0.22);
+  border-radius: 17px;
+  padding: 0.9rem 1rem;
+  background: rgba(255, 250, 232, 0.66);
+}
+
+.summary-box h3 {
+  margin: 0 0 0.4rem;
+}
+
+.summary-box p {
+  margin: 0;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.delete-checkin-button {
+  display: block;
+  width: 100%;
+  min-height: 50px;
+  margin-top: 1rem;
+  border: 1px solid rgba(116, 45, 35, 0.45);
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(91, 38, 31, 0.16);
+  color: #fff7e8;
+  background: linear-gradient(180deg, #b84f3e, #943b31);
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.delete-checkin-button:active {
+  transform: translateY(1px);
+}
+
+.delete-checkin-button:disabled {
+  opacity: 0.58;
+  cursor: wait;
+}
+
+.loading-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  color: #fff4da;
+  background: rgba(56, 27, 24, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid rgba(255, 240, 203, 0.32);
+  border-top-color: #ffd98e;
+  border-radius: 50%;
+  animation: spin 720ms linear infinite;
+}
+
+.loading-cover p {
+  margin: 0.7rem 0 0;
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+.toast {
+  position: absolute;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: 1rem;
+  z-index: 50;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+  border: 1px solid rgba(255, 244, 215, 0.6);
+  border-radius: 999px;
+  padding: 0.65rem 1rem;
+  opacity: 0;
+  color: #fff5dd;
+  background: rgba(66, 31, 27, 0.92);
+  font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 0.88rem;
+  text-align: center;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes orb-arrive {
+  from { opacity: 0; transform: translateY(-10px) scale(0.82); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes modal-enter {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 420px) {
+  .top-actions {
+    width: 56%;
+  }
+
+  .add-temple-button {
+    min-height: 48px;
+  }
+
+  .shelf-row {
+    left: 20%;
+  }
+
+  .modal-layer {
+    padding-inline: 11px;
+  }
+
+  .modal-card {
+    border-radius: 23px;
+    padding: 1.2rem 1rem;
+  }
+
+  .region-buttons {
+    padding: 0.45rem;
+  }
+
+  .region-button {
+    min-height: 43px;
+  }
+
+  .detail-list div {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}
+
+/*
+ * 電腦只作為「手機外觀預覽」：固定用原始設計稿 1080:1456 的直式比例，
+ * 避免桌面瀏覽器把整個收藏架橫向拉寬。
+ * 真正的手機與 LINE MINI App 仍會填滿可用視窗。
+ */
+@media (min-width: 700px) {
+  body {
+    overflow: auto;
+    padding: 20px;
+    place-items: center;
+  }
+
+  .app-shell {
+    width: min(460px, calc((100svh - 40px) * 0.7418), calc(100vw - 40px));
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 1080 / 1456;
+    border: 1px solid rgba(255, 237, 206, 0.45);
+    border-radius: 26px;
+    box-shadow: 0 18px 55px rgba(36, 16, 14, 0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
